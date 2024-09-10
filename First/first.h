@@ -1,30 +1,52 @@
 #ifndef FIRST_H
 #define FIRST_H
 
-#define MAX 10
+#include <string>
+#include <set>
+
 using namespace std;
 
-
-// Structure to store the grammar
-class Grammar {
+class node {
     private:
-        char production[MAX][MAX];
-        char first;
-        int numProductions;
+        char symbol;
+        node *next;
+        node *nextNT;
+    
     public:
-        void calculateFirst(char c);
-        void readGrammar(const string& filename);
+        node();
+        node(char sym);
+
+        friend class Grammar;
 };
 
-//int list class
-class intList{
+class Production {
     private:
-    int *a;
-    int capacity;
-    int MAX;
+        char lhs;
+        node *rhs;
+        Production *nextProduction;
+    
     public:
-    intList(int MAX = 10);
-    ~intList();
+        Production();
+        Production(char non_terminal);
+
+        friend class Grammar;
+};
+
+class Grammar {
+    private:
+        Production *startProduction;
+        char startSymbol;
+
+        bool isNonTerminal(char symbol);  // Helper function to identify non-terminals
+        bool isTerminal(char symbol);
+
+    public:
+        Grammar();
+        int readGrammar(string& filename);
+        void printGrammar();
+        void printTerminals();
+        void printNonTerminals();
+        void printStartSymbol();
 };
 
 #endif
