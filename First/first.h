@@ -36,6 +36,9 @@ class Grammar {
     private:
         Production *startProduction;
         char startSymbol;
+        set<char> terminals;
+        set<char> nonTerminals;
+        set<char> firstSets;
 
         bool isNonTerminal(char symbol);  // Helper function to identify non-terminals
         bool isTerminal(char symbol);
@@ -47,6 +50,8 @@ class Grammar {
         void printTerminals();
         void printNonTerminals();
         void printStartSymbol();
+        int calculateFirst(char symbol);
+        void printFirstSets(char symbol);
 };
 
 #endif

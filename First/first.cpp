@@ -135,7 +135,6 @@ bool Grammar::isTerminal(char symbol) {
 
 // Function to print all terminals
 void Grammar::printTerminals() {
-    set<char> terminals;
     Production *current = startProduction;
     while (current != nullptr) {
         node *currentNode = current->rhs;
@@ -160,7 +159,6 @@ void Grammar::printTerminals() {
 
 // Function to print all non-terminals
 void Grammar::printNonTerminals() {
-    set<char> nonTerminals;
     Production *current = startProduction;
     while (current != nullptr) {
         nonTerminals.insert(current->lhs);
@@ -189,6 +187,76 @@ void Grammar::printStartSymbol() {
 }
 
 //******************************************************************************
+int Grammar::calculateFirst(char symbol) {
+    int rc = -1;
+    // If the symbol is a terminal and exists in the set of terminals, add it to the first set
+    if (isTerminal(symbol)) {
+        if(terminals.find(symbol) != terminals.end()){
+            firstSets.insert(symbol);
+            rc = 0;
+        } else{
+            cout << "Terminal " << symbol << " not found in the set of terminals" << endl;
+            rc = -1;
+        }
+        
+    }
+
+    // If the symbol is a non-terminal, find the production with the symbol in the left-hand side
+    if(isNonTerminal(symbol)){
+        if(nonTerminals.find(symbol) == nonTerminals.end()){
+            rc = -1;
+        } else{
+            Production *current = startProduction;
+            
+            while (current != nullptr){
+                if (current->lhs == symbol){
+                    // If the right-hand side of the production starts with a terminal, add it to the first set
+                    node *currentNode = current->rhs;
+                    while(currentNode != nullptr){
+                        if(isTerminal(currentNode->symbol)){
+                            firstSets.insert(currentNode->symbol);
+
+                            rc = 0;
+                            // Move to the next alternative if '|' is found
+                            while (currentNode->next != nullptr && currentNode->symbol != '|') {
+                                currentNode = currentNode->next;
+                            }
+                        } else if(isNonTerminal(currentNode->symbol)){
+                            // If the right-hand side of the production starts with a non-terminal, calculate the first set of the non-terminal
+                            node *temp = currentNode;
+                            calculateFirst(temp->symbol);
+
+                            // Move to the next alternative if '|' is found
+                            while (currentNode != nullptr && currentNode->symbol != '|') {
+                                currentNode = currentNode->next;
+                            }
+                        }
+                        currentNode = currentNode->next;
+                    }
+                }
+                current = current->nextProduction;
+            }
+        }
+    }
+
+    return rc;
+}
+//******************************************************************************
+// Function to print the first sets
+void Grammar::printFirstSets(char symbol) {
+    
+    if(!calculateFirst(symbol)){
+        cout << "First(" << symbol << ") = { ";
+        for (char first : firstSets) {
+            cout << first << " ";
+        }
+        cout << "}" << endl;
+    }
+
+    firstSets.clear();
+    
+}
+//******************************************************************************
 // Main function
 int main() {
     Grammar grammar;
@@ -199,6 +267,8 @@ int main() {
         grammar.printTerminals();
         grammar.printNonTerminals();
         grammar.printStartSymbol();
+        grammar.printFirstSets('B');
+        grammar.printFirstSets('C');
     }
     return 0;
 }
