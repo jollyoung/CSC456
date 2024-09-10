@@ -16,4 +16,15 @@ class Grammar {
         void readGrammar(const string& filename);
 };
 
+//int list class
+class intList{
+    private:
+    int *a;
+    int capacity;
+    int MAX;
+    public:
+    intList(int MAX = 10);
+    ~intList();
+};
+
 #endif
