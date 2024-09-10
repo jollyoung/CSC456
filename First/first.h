@@ -8,12 +8,10 @@ class node {
         char symbol;
         // Pointer to the next node
         node *next;
-        // Pointer to the next non-terminal
-        node *nextNT;
     
     public:
-        node(char sym) : symbol(sym), next(nullptr), nextNT(nullptr) {}
-
+        node();
+        node(char sym);
         friend class Grammar;
 };
 
@@ -26,6 +24,7 @@ class Production{
         Production *nextProduction;
     
     public:
+        Production();
         Production(char non_terminal) : lhs(non_terminal), rhs(nullptr), nextProduction(nullptr) {};
 
         friend class Grammar;
@@ -38,7 +37,7 @@ class Grammar {
         char startSymbol;
 
     public:
-        Grammar() : startProduction(nullptr), startSymbol(0) {};
+        Grammar();
         int readGrammar(string& filename);
         void printGrammar();
 };

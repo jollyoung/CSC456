@@ -7,6 +7,30 @@
 
 
 using namespace std;
+//******************************************************************************
+node::node() {
+    symbol = 0;
+    next = nullptr;
+}
+
+//******************************************************************************
+node::node(char sym) {
+    symbol = sym;
+    next = nullptr;
+}
+
+//******************************************************************************
+Production::Production() {
+    lhs = 0;
+    rhs = nullptr;
+    nextProduction = nullptr;
+}
+
+//******************************************************************************
+Grammar::Grammar() {
+    startProduction = nullptr;
+    startSymbol = 0;
+}
 
 //******************************************************************************
 int Grammar::readGrammar(string& filename) {
@@ -50,7 +74,7 @@ int Grammar::readGrammar(string& filename) {
 
         // Create a new node for the first symbol in the right hand side
         node* prev = nullptr;
-        for(int i = 2; i < line.length(); i++) {
+        for(int i = 4; i < line.length(); i++) {
             char sym = line[i];
             node* newNode = new node(sym);
             if(prev == nullptr) {
