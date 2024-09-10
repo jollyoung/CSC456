@@ -41,3 +41,20 @@ int main() {
 
     return 0;
 }
+
+//constructor to initialize variables and allocate array
+intList::intList(int MAX){
+    this->MAX = MAX;
+    capacity = 0;
+    a = new int[MAX];
+}
+
+//Destructor 
+intList::~intList(){
+    //check if a (pointer) exists
+    if(a){
+        //if it exits delete it and set pointer to Null
+        delete []a;
+        a = NULL;
+    }
+}
