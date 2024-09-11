@@ -6,6 +6,17 @@
 
 #include "first.h"
 
+/*
+Do we need to consider the case
+
+S -> aBa | bCb;
+B -> a | b | D;
+C -> Sef | fed;
+C -> dog;
+
+that non-terminal D doesn't exist on lhs
+Then, maybe first(B) = {a, b, D}?
+*/
 
 using namespace std;
 //******************************************************************************
