@@ -113,7 +113,7 @@ int Grammar::readGrammar(string& filename) {
 
             // As first 4 symbols will be lhs and '->' so start from 4
             // Save each symbol in the rhs as a node
-            for (int i = 4; i < line.length(); i++) {
+            for (size_t i = 4; i < line.length(); i++) {
                 char sym = line[i];
                 node *newNode = new node(sym);
                 if (prev == nullptr) {
@@ -125,10 +125,9 @@ int Grammar::readGrammar(string& filename) {
             }
         }
 
-        rc = 1;
+        rc = 0;
         file.close();
     }
-    
 
     return rc;
 }

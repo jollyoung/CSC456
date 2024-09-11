@@ -4,7 +4,7 @@ int main() {
     Grammar grammar;
     string filename = "grammar.txt";
     int rc = grammar.readGrammar(filename);
-    if (rc) {
+    if (rc == 0) {
         grammar.printGrammar();
         grammar.printTerminals();
         grammar.printNonTerminals();
