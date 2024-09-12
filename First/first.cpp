@@ -1,3 +1,9 @@
+/*
+* Rolling Pandas
+* CSC453 Fall 2024
+* Assignment: First part 1
+*/
+
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -6,19 +12,14 @@
 
 #include "first.h"
 
-/*
-Do we need to consider the case
-
-S -> aBa | bCb;
-B -> a | b | D;
-C -> Sef | fed;
-C -> dog;
-
-that non-terminal D doesn't exist on lhs
-Then, maybe first(B) = {a, b, D}?
-*/
-
 using namespace std;
+/*
+TO DO LIST
+1. Implement code to check for characters like -> or ;
+2. Implement deconstructors
+3. When the pointer meats ;, use it as a sign to go next line. No other
+symbols
+*/
 //******************************************************************************
 node::node() {
     symbol = 0;
@@ -28,6 +29,11 @@ node::node() {
 //******************************************************************************
 node::node(char sym) {
     symbol = sym;
+    next = nullptr;
+}
+
+//******************************************************************************
+node::~node() {
     next = nullptr;
 }
 
@@ -46,123 +52,179 @@ Production::Production(char non_terminal) {
 }
 
 //******************************************************************************
+Production::~Production() {
+    node *currentNode = rhs;
+    while (currentNode != nullptr) {
+        node *nextNode = currentNode->next;
+        delete currentNode;
+        currentNode = nextNode;
+    }
+    rhs = nullptr;
+    nextProduction = nullptr;
+}
+
+//******************************************************************************
 Grammar::Grammar() {
     startProduction = nullptr;
     startSymbol = 0;
 }
 
 //******************************************************************************
-// Grammar::~Grammar() {
-//     Production *current = startProduction;
-//     while (current != nullptr) {
-//         Production *next = current->nextProduction;
-//         node *currentNode = current->rhs;
-//         while (currentNode != nullptr) {
-//             node *nextNode = currentNode->next;
-//             delete currentNode;
-//             currentNode = nextNode;
-//         }
-//         delete current;
-//         current = next;
-//     }
-
-//     startProduction = nullptr;
-//     startSymbol = 0;
-// }
+Grammar::~Grammar() {
+    Production *currentProduction = startProduction;
+    while (currentProduction != nullptr) {
+        Production *nextProduction = currentProduction->nextProduction;
+        delete currentProduction;
+        currentProduction = nextProduction;
+    }
+    startProduction = nullptr;
+}
 
 //******************************************************************************
 // Function to read grammar from file
 int Grammar::readGrammar(string& filename) {
-    int rc = -1;
-
-    // Open the file
     ifstream file(filename);
-
-    // Check if the file is open, if not print an error message
     if (!file.is_open()) {
-        cout << "File not found" << endl;
-        rc = -1;
-    } else {
-        string line;
-        while (getline(file, line)) {
-            // Skip empty lines
-            if (line.empty()) {
-                continue;
+        cerr << "Error opening file: " << filename << endl;
+        return -1;
+    }
+
+    string line;
+    int rc = 0;
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+
+        // Print error message if the first symbol is not a non-terminal
+        if (!isNonTerminal(line[0])) {
+            cout << "The first symbol in the line is not a non-terminal" << endl;
+            rc = -1;
+            break;
+        }
+
+        // Print error message if the grammar is not in the correct format
+        if (line[1] != ' ' || line[2] != '-' || line[3] != '>') {
+            cout << "The grammar is not in the correct format" << endl;
+            rc = -1;
+            break;
+        }
+
+        char lhs = line[0];
+
+        // Save the first symbol as the start symbol 
+        // if it is the first production
+        if (startProduction == nullptr) {
+            startSymbol = lhs;
+        }
+
+        bool isNewProduction = true;
+        // If there is production with the same lhs symbol
+        // Set the current production to that production
+        Production *currentProduction = startProduction;
+        while (currentProduction != nullptr) {
+            if (currentProduction->lhs == lhs) {
+                isNewProduction = false;
+                break;
             }
+            currentProduction = currentProduction->nextProduction;
+        }
 
-            // The first symbol shall be the non-terminal in left hand side
-            // Save the first symobl in the left hand side
-            char lhs = line[0];
-
-            // Save the first symbol as the start symbol 
-            // if it is the first production
-            if (startProduction == nullptr) {
-                startSymbol = lhs;
-            }
-
-            // Create a new production
-            Production *newProduction = new Production(lhs);
-
-            // If there is no production yet
-            // Save the new production as the first production
-            if (startProduction == nullptr) {
-                startProduction = newProduction;
-            } else {
-                // If other productions already exist
-                // Add the new production to the end of the list
-                Production *current = startProduction;
-
-                // Move pointer to the last production
-                while (current->nextProduction != nullptr) {
-                    current = current->nextProduction;
-                }
-                current->nextProduction = newProduction;
-            }
-
+        node *prev = nullptr;
+        // if the production with lhs is not found, create a new production
+        if (isNewProduction) {
+            currentProduction = new Production(lhs);
             // Create nodes for the right-hand side of the production
-            node *prev = nullptr;
+        } else {
+            // If the production with the same lhs is found
+            prev = currentProduction->rhs;
+            while (prev->next != nullptr) {
+                prev = prev->next;
+            }
 
-            // As first 4 symbols will be lhs and '->' so start from 4
-            // Save each symbol in the rhs as a node
-            for (size_t i = 4; i < line.length(); i++) {
-                char sym = line[i];
-                node *newNode = new node(sym);
-                if (prev == nullptr) {
-                    newProduction->rhs = newNode;
-                } else {
-                    prev->next = newNode;
-                }
-                prev = newNode;
+            if(prev->next == nullptr){
+                node *newNode1 = new node(' ');
+                node *newNode2 = new node('|');
+                prev->next = newNode1;
+                newNode1->next = newNode2;
+                prev = newNode2;
             }
         }
 
-        rc = 0;
-        file.close();
+        // As first 4 symbols will be lhs and '->' so start from 4
+        // Save each symbol in the rhs as a node
+        size_t i = 4;
+        string currentRhs;
+
+        while (i < line.length()) {
+            char sym = line[i];
+
+            if (sym == '|' || sym == ';') {
+                // Add the accumulated string to the set
+                cout << currentRhs << endl;
+                currentProduction->rhsSet.insert(currentRhs);
+                currentRhs.clear(); // Clear the string for the next RHS
+            } else {
+                currentRhs += sym; // Accumulate characters into the string
+            }
+
+            node *newNode = new node(sym);
+            if (prev == nullptr) {
+                currentProduction->rhs = newNode;
+            } else {
+                prev->next = newNode;
+            }
+            prev = newNode;
+            i++;
+        }
+
+        // Add the new production to the list of productions
+        if (startProduction == nullptr) {
+            startProduction = currentProduction;
+        } else if(!isNewProduction){
+            continue;        
+        } else {
+            Production *current = startProduction;
+            while (current->nextProduction != nullptr) {
+                current = current->nextProduction;
+            }
+            current->nextProduction = currentProduction;
+        }
+        
+        
     }
 
+    file.close();
     return rc;
 }
 
 //******************************************************************************
 // Function to print the grammar
 void Grammar::printGrammar() {
-    Production *current = startProduction;
+    Production *currentProduction = startProduction;
 
-    while (current != nullptr) {
+    while (currentProduction != nullptr) {
         // Print lhs symbol and '->'
-        cout << current->lhs << " -> ";
+        cout << currentProduction->lhs << " -> ";
 
-        // Print the rhs symbols
-        node *currentNode = current->rhs;
-        while (currentNode != nullptr) {
-            cout << currentNode->symbol;
-            currentNode = currentNode->next;
+        // // Print the rhs symbols
+        // node *currentNode = current->rhs;
+        // while (currentNode != nullptr) {
+        //     cout << currentNode->symbol;
+        //     currentNode = currentNode->next;
+        // }
+
+        // Print the rhs set
+        for (string rhsString : currentProduction->rhsSet) {
+            cout << rhsString;
+            // If the rhs is not the last alternative, print '|'
+            if (rhsString != currentProduction->rhsSet.rbegin()->c_str()) {
+                cout << " |";
+            }
         }
 
-        cout << endl;
+        cout << ';' << endl;
 
         // Move to the next production
-        current = current->nextProduction;
+        currentProduction = currentProduction->nextProduction;
     }
 }
 

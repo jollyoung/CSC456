@@ -1,3 +1,9 @@
+/*
+* Rolling Pandas
+* CSC453 Fall 2024
+* Assignment: First part 1
+*/
+
 #ifndef FIRST_H
 #define FIRST_H
 
@@ -17,7 +23,9 @@ class node {
         node();
         // Constructur to create a node with a symbol
         node(char sym);
+        ~node();
 
+        friend class Production;
         friend class Grammar;
 };
 
@@ -29,6 +37,8 @@ class Production {
         char lhs;
         // Save the location of the first node in the right-hand side
         node *rhs;
+        // Set to save rhs without parsing
+        set<string> rhsSet;
         // Pointer to the next production
         Production *nextProduction;
     
@@ -36,6 +46,7 @@ class Production {
         Production();
         // Constructor to create a production with a non-terminal symbol in lhs
         Production(char non_terminal);
+        ~Production();
 
         friend class Grammar;
 };
@@ -64,7 +75,7 @@ class Grammar {
 
     public:
         Grammar();
-        // ~Grammar();
+        ~Grammar();
         // Function to read the grammar from a text file
         int readGrammar(string& filename);
 

@@ -1,3 +1,9 @@
+/*
+* Rolling Pandas
+* CSC453 Fall 2024
+* Assignment: First part 1
+*/
+
 #include "first.h"
 
 int main() {
