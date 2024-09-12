@@ -70,8 +70,8 @@ class Grammar {
         bool isNonTerminal(char symbol); 
         bool isTerminal(char symbol);
 
-        // Function to calculate the first set of an input symbol
-        bool calculateFirst(char symbol);
+        // // Function to calculate the first set of an input symbol
+        // bool calculateFirst(char symbol);
 
     public:
         Grammar();
@@ -86,7 +86,7 @@ class Grammar {
         void printStartSymbol();
         void printAll();
         
-        void printFirstSets(char symbol);
+        // void printFirstSets(char symbol);
 };
 
 #endif

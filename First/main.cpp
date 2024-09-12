@@ -12,24 +12,13 @@ int main() {
     int rc = grammar.readGrammar(filename);
     if (rc == 0) {
         grammar.printAll();
-        grammar.printFirstSets('B');
-        grammar.printFirstSets('C');
-        grammar.printFirstSets('Z');
-        grammar.printFirstSets('b');
-        grammar.printFirstSets('*');
     }
 
-    // grammar.~Grammar();
-
-    // filename = "grammar2.txt";
-    // rc = grammar.readGrammar(filename);
-    // if (rc == 0) {
-    //     grammar.printGrammar();
-    //     grammar.printTerminals();
-    //     grammar.printNonTerminals();
-    //     grammar.printStartSymbol();
-    //     grammar.printFirstSets('A');
-    //     grammar.printFirstSets('C');
-    // }
+    filename = "grammar2.txt";
+    rc = grammar.readGrammar(filename);
+    if (rc == 0) {
+        grammar.printAll();
+        
+    }
     return 0;
 }

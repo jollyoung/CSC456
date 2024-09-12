@@ -1,4 +1,3 @@
-S -> aBa | bCb;
-A -> a | b;
-C -> Sef | fed;
-C -> dog;
+D -> fG;
+F -> f | g | &;
+G -> k | j;
