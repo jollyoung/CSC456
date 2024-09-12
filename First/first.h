@@ -84,6 +84,8 @@ class Grammar {
         void printTerminals();
         void printNonTerminals();
         void printStartSymbol();
+        void printAll();
+        
         void printFirstSets(char symbol);
 };
 

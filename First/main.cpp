@@ -11,10 +11,7 @@ int main() {
     string filename = "grammar.txt";
     int rc = grammar.readGrammar(filename);
     if (rc == 0) {
-        grammar.printGrammar();
-        grammar.printTerminals();
-        grammar.printNonTerminals();
-        grammar.printStartSymbol();
+        grammar.printAll();
         grammar.printFirstSets('B');
         grammar.printFirstSets('C');
         grammar.printFirstSets('Z');
