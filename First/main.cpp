@@ -3,6 +3,10 @@
 * CSC453 Fall 2024
 * Assignment: First part 1
 */
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <string>
 
 #include "first.h"
 
@@ -14,11 +18,5 @@ int main() {
         grammar.printAll();
     }
 
-    filename = "grammar2.txt";
-    rc = grammar.readGrammar(filename);
-    if (rc == 0) {
-        grammar.printAll();
-        
-    }
     return 0;
 }

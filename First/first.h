@@ -8,26 +8,9 @@
 #define FIRST_H
 
 #include <string>
-#include <set>
+#include "linkList.h"
 
 using namespace std;
-
-// Node class
-// Save the symbol and a pointer to the next node
-class node {
-    private:
-        char symbol;
-        node *next;
-    
-    public:
-        node();
-        // Constructur to create a node with a symbol
-        node(char sym);
-        ~node();
-
-        friend class Production;
-        friend class Grammar;
-};
 
 // Production class
 // Save the left-hand side, the right-hand side and a pointer to the next production
@@ -35,10 +18,10 @@ class Production {
     private:
         // Save non-terminal symbol in the left-hand side
         char lhs;
+        // Save the location of the first node in the left-hand side
+        node *lhsNode;
         // Save the location of the first node in the right-hand side
-        node *rhs;
-        // Set to save rhs without parsing
-        set<string> rhsSet;
+        node *rhsNode;
         // Pointer to the next production
         Production *nextProduction;
     
@@ -59,16 +42,10 @@ class Grammar {
         Production *startProduction;
         // Start symbol of the grammar
         char startSymbol;
-        // Set to save all terminals
-        set<char> terminals;
-        // Set to save all non-terminals
-        set<char> nonTerminals;
-        // Set to save firsts
-        set<char> firstSets;
-
-        // Function to check if a symbol is a non-terminal
-        bool isNonTerminal(char symbol); 
-        bool isTerminal(char symbol);
+        // Linked list to save non-terminal symbols
+        LinkList nonTerminals;
+        // Linked list to save terminal symbols
+        LinkList terminals;
 
         // // Function to calculate the first set of an input symbol
         // bool calculateFirst(char symbol);
