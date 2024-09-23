@@ -46,9 +46,8 @@ class Grammar {
         LinkList nonTerminals;
         // Linked list to save terminal symbols
         LinkList terminals;
-
-        // // Function to calculate the first set of an input symbol
-        // bool calculateFirst(char symbol);
+        // Linked list to save first sets
+        LinkList firstSets;
 
     public:
         Grammar();
@@ -62,8 +61,11 @@ class Grammar {
         void printNonTerminals();
         void printStartSymbol();
         void printAll();
+
+        // Function to calculate the first set of an input symbol
+        bool calculateFirst(char symbol);
         
-        // void printFirstSets(char symbol);
+        void printFirstSets(char symbol);
 };
 
 #endif

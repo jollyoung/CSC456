@@ -317,88 +317,69 @@ void Grammar::printAll() {
     cout << endl;
 }
 
-// //******************************************************************************
-// bool Grammar::calculateFirst(char symbol) {
-//     bool rc = false;
+//******************************************************************************
+bool Grammar::calculateFirst(char symbol) {
+    bool rc = false;
 
-//     cout << "Calculating First(" << symbol << ")" << endl;
+    // If the symbol is a terminal or epsilon and exists in the set of terminals
+    if (terminals.search(symbol) || symbol == '&') {
+        firstSets.insert(symbol);
+        rc = true;
+    } else if (nonTerminals.search(symbol)) {
+        Production *currentProduction = startProduction;
+        while (currentProduction != nullptr) {
+            // Find production with the given non-terminal in the lhs
+            if (currentProduction->lhs == symbol) {
+                node *currentNode = currentProduction->rhsNode;
+                while (currentNode != nullptr) {
+                    while(isspace(currentNode->symbol)){
+                        currentNode = currentNode->next;
+                    }
 
-//     // If the symbol is a terminal or epsilon and exists in the set of terminals
-//     if (isTerminal(symbol)) {
-//         if (terminals.find(symbol) != terminals.end()) {
-//             firstSets.insert(symbol);
-//             rc = true;
-//         } else {
-//             cout << "Terminal " << symbol << " not found in the set of terminals" << endl;
-//         }
-//     } else if (isNonTerminal(symbol)) {
-//         // If the symbol is a non-terminal, but not in the set of non-terminals
-//         if (nonTerminals.find(symbol) == nonTerminals.end()) {
-//             cout << "Non-terminal " << symbol << " not found in the set of non-terminals" << endl;
-//         } else {
-//             Production *currentProduction = startProduction;
-//             while (currentProduction != nullptr) {
-//                 // Find production with the given non-terminal in the lhs
-//                 if (currentProduction->lhs == symbol) {
-//                     node *currentNode = currentProduction->rhs;
-//                     while (currentNode != nullptr) {
-//                         cout << "Current node: " << currentNode->symbol << endl;
-//                         cout << "First set: ";
-//                         for (char first : firstSets) {
-//                             cout << first << " ";
-//                         }
-//                         cout << endl;
+                    if (terminals.search(currentNode->symbol)) {
+                        firstSets.insert(currentNode->symbol);
+                        rc = true;
+                    } else if (nonTerminals.search(currentNode->symbol)) {
+                        // Recursive call for non-terminal
+                        if (calculateFirst(currentNode->symbol)) {
+                            rc = true;
+                        }
+                    }
 
-//                         if (isTerminal(currentNode->symbol)) {
-//                             firstSets.insert(currentNode->symbol);
-//                             rc = true;
-//                             break;
-//                         } else if (isNonTerminal(currentNode->symbol)) {
-//                             // Recursive call for non-terminal
-//                             if (calculateFirst(currentNode->symbol)) {
-//                                 rc = true;
-//                             }
-//                         } else if (currentNode->symbol == '&') {
-//                             firstSets.insert('&');
-//                             rc = true;
-//                             break;
-//                         }
+                    // Move to the next alternative
+                    while (currentNode != nullptr && currentNode->symbol != '|') {
+                        currentNode = currentNode->next;
+                    }
+                    if (currentNode != nullptr) {
+                        currentNode = currentNode->next;
+                    }
+                }
+            }
+            currentProduction = currentProduction->nextProduction;
+        }
+        
+    } else {
+        // If the symbol is not a terminal or non-terminal
+        cout << "Symbol " << symbol << " is not a terminal or non-terminal" << endl;
+    }
 
-//                         // Move to the next alternative
-//                         while (currentNode != nullptr && currentNode->symbol != '|') {
-//                             currentNode = currentNode->next;
-//                         }
-//                         if (currentNode != nullptr) {
-//                             currentNode = currentNode->next;
-//                         }
-//                     }
-//                 }
-//                 currentProduction = currentProduction->nextProduction;
-//             }
-//         }
-//     } else {
-//         // If the symbol is not a terminal or non-terminal
-//         cout << "Symbol " << symbol << " is not a terminal or non-terminal" << endl;
-//     }
+    return rc;
+}
 
-//     return rc;
-// }
 
-// //******************************************************************************
-// // Function to print the first sets
-// void Grammar::printFirstSets(char symbol) {
+//******************************************************************************
+// Function to print the first sets
+void Grammar::printFirstSets(char symbol) {
     
-//     // If the first set is calculated successfully
-//     if(calculateFirst(symbol)){
-//         cout << "First(" << symbol << ") = { ";
-//         for (char first : firstSets) {
-//             cout << first << " ";
-//         }
-//         cout << "}" << endl;
-//     } else {
-//         cout << "First(" << symbol << ") is not found" << endl;
-//     }
+    // If the first set is calculated successfully
+    if(calculateFirst(symbol)){
+        cout << "First(" << symbol << ") = { ";
+        firstSets.print();
+        cout << "}" << endl;
+    } else {
+        cout << "First(" << symbol << ") is not found" << endl;
+    }
 
-//     // Clear the first set
-//     firstSets.clear();
-// }
+    // Clear the first set
+    firstSets.clear();
+}

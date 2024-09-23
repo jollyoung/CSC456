@@ -16,6 +16,11 @@ int main() {
     int rc = grammar.readGrammar(filename);
     if (rc == 0) {
         grammar.printAll();
+        grammar.printFirstSets('d');
+        grammar.printFirstSets('B');
+        grammar.printFirstSets('S');
+        grammar.printFirstSets('C');
+        grammar.calculateFirst('E');
     }
 
     return 0;
