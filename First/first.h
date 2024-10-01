@@ -49,6 +49,8 @@ class Grammar {
         // Linked list to save first sets
         LinkList firstSets;
 
+        bool isEpsilon;
+
     public:
         Grammar();
         ~Grammar();
@@ -64,8 +66,11 @@ class Grammar {
 
         // Function to calculate the first set of an input symbol
         bool calculateFirst(char symbol);
+        // Function to calculate the first set of multiple symbols
+        bool calculateFirst(string symbols);
         
         void printFirstSets(char symbol);
+        void printFirstSets(string symbols);
 };
 
 #endif

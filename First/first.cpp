@@ -47,6 +47,7 @@ Production::~Production() {
 Grammar::Grammar() {
     startProduction = nullptr;
     startSymbol = 0;
+    isEpsilon = false;
 }
 
 //******************************************************************************
@@ -253,8 +254,11 @@ void Grammar::printGrammar() {
         node *currentNode = currentProduction->rhsNode;
         int spaceCount = 0;  // Variable to count consecutive spaces
 
+        bool newLine = false;
+        
         while (currentNode != nullptr) {
             char symbol = currentNode->symbol;
+            
 
             // Check if the symbol is a space
             if (isspace(symbol)) {
@@ -265,9 +269,10 @@ void Grammar::printGrammar() {
             }
 
             // If '|' is encountered and there are more than 3 spaces before it
-            if (isspace(symbol) && spaceCount > 3) {
+            if (isspace(symbol) && spaceCount > 3 && !newLine) {
                 cout << endl;  // Print a newline
                 cout << "   ";  // Print 3 spaces
+                newLine = true;
             } else {
                 // Print the symbol as normal
                 cout << symbol;
@@ -320,31 +325,59 @@ void Grammar::printAll() {
 //******************************************************************************
 bool Grammar::calculateFirst(char symbol) {
     bool rc = false;
+    isEpsilon = false;
 
     // If the symbol is a terminal or epsilon and exists in the set of terminals
     if (terminals.search(symbol) || symbol == '&') {
+        if(symbol == '&'){
+            isEpsilon = true;
+        }
         firstSets.insert(symbol);
         rc = true;
-    } else if (nonTerminals.search(symbol)) {
+    } 
+    
+    else if (nonTerminals.search(symbol)) {
         Production *currentProduction = startProduction;
         while (currentProduction != nullptr) {
             // Find production with the given non-terminal in the lhs
             if (currentProduction->lhs == symbol) {
                 node *currentNode = currentProduction->rhsNode;
+
                 while (currentNode != nullptr) {
+                    
+                    // Skip spaces
                     while(isspace(currentNode->symbol)){
                         currentNode = currentNode->next;
                     }
 
+                    // If the symbol is a terminal, save it to the first set
                     if (terminals.search(currentNode->symbol)) {
                         firstSets.insert(currentNode->symbol);
                         rc = true;
-                    } else if (nonTerminals.search(currentNode->symbol)) {
+                    } 
+                    
+                    else if (currentNode->symbol == '&') {
+                        isEpsilon = true;
+                        firstSets.insert(currentNode->symbol);
+                        rc = true;
+                    } 
+                    
+                    else if (nonTerminals.search(currentNode->symbol)) {
                         // Recursive call for non-terminal
-                        if (calculateFirst(currentNode->symbol)) {
-                            rc = true;
+                        rc = calculateFirst(currentNode->symbol);
+                        
+                        if(isEpsilon && currentNode->next != nullptr){
+                            char nextSym = currentNode->next->symbol;
+                            if(terminals.search(nextSym)){
+                                firstSets.remove('&');
+                                firstSets.insert(nextSym);
+                            } else if(nonTerminals.search(nextSym)){
+                                firstSets.remove('&');
+                                calculateFirst(nextSym);
+                            }
                         }
                     }
+
 
                     // Move to the next alternative
                     while (currentNode != nullptr && currentNode->symbol != '|') {
@@ -366,6 +399,22 @@ bool Grammar::calculateFirst(char symbol) {
     return rc;
 }
 
+//******************************************************************************
+// Function to calculate the first set of multiple symbols
+bool Grammar::calculateFirst(string symbols) {
+    bool rc = false;
+
+    // For each symbol in the input string
+    for (size_t i = 0; i < symbols.size(); i++) {
+        // Calculate the first set of the symbol
+        rc = calculateFirst(symbols[i]);
+        if(rc){
+            break;
+        }
+    }
+    
+    return rc;
+}
 
 //******************************************************************************
 // Function to print the first sets
@@ -378,6 +427,23 @@ void Grammar::printFirstSets(char symbol) {
         cout << "}" << endl;
     } else {
         cout << "First(" << symbol << ") is not found" << endl;
+    }
+
+    // Clear the first set
+    firstSets.clear();
+}
+
+//******************************************************************************
+// Function to print the first sets
+void Grammar::printFirstSets(string symbols) {
+    
+    // If the first set is calculated successfully
+    if(calculateFirst(symbols)){
+        cout << "First(" << symbols << ") = { ";
+        firstSets.print();
+        cout << "}" << endl;
+    } else {
+        cout << "First(" << symbols << ") is not found" << endl;
     }
 
     // Clear the first set

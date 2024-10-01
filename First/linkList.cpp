@@ -67,6 +67,29 @@ void LinkList::insert(char sym) {
 }
 
 //******************************************************************************
+void LinkList::remove(char sym) {
+    node *currentNode = head;
+    while (currentNode != nullptr) {
+        if (currentNode->symbol == sym) {
+            if (currentNode->prev != nullptr) {
+                currentNode->prev->next = currentNode->next;
+            } else {
+                head = currentNode->next;
+            }
+            if (currentNode->next != nullptr) {
+                currentNode->next->prev = currentNode->prev;
+            } else {
+                tail = currentNode->prev;
+            }
+            size--;
+            delete currentNode;
+            break;
+        }
+        currentNode = currentNode->next;
+    }
+}
+
+//******************************************************************************
 void LinkList::print() {
     node *currentNode = head;
     while (currentNode != nullptr) {

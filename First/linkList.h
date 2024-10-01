@@ -34,6 +34,7 @@ class LinkList {
         void clear();
         int getSize();
         bool search(char sym);
+        void remove(char sym);
 };
 
 #endif

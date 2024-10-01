@@ -19,8 +19,7 @@ int main() {
         grammar.printFirstSets('d');
         grammar.printFirstSets('B');
         grammar.printFirstSets('S');
-        grammar.printFirstSets('C');
-        grammar.calculateFirst('E');
+        grammar.printFirstSets("Ba");
     }
 
     return 0;
