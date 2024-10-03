@@ -338,9 +338,11 @@ bool Grammar::calculateFirst(char symbol) {
         firstSets.insert(symbol);
         rc = true;
     } 
-    
+    // If the symbol is a nonterminal
     else if (nonTerminals.search(symbol)) {
         Production *currentProduction = startProduction;
+
+        //go though the given production
         while (currentProduction != nullptr) {
             // Find production with the given non-terminal in the lhs
             if (currentProduction->lhs == symbol) {
@@ -358,7 +360,7 @@ bool Grammar::calculateFirst(char symbol) {
                         firstSets.insert(currentNode->symbol);
                         rc = true;
                     } 
-                    
+                    //check if there is a epsilon in the production
                     else if (currentNode->symbol == '&') {
                         isEpsilon = true;
                         firstSets.insert(currentNode->symbol);
@@ -371,9 +373,11 @@ bool Grammar::calculateFirst(char symbol) {
                         
                         if(isEpsilon && currentNode->next != nullptr){
                             char nextSym = currentNode->next->symbol;
+                            //if nextSym is terminals, remove the epsilon and add to first set
                             if(terminals.search(nextSym)){
                                 firstSets.remove('&');
                                 firstSets.insert(nextSym);
+                                //if nextSym is nonterminals, calc the first for the nextSym
                             } else if(nonTerminals.search(nextSym)){
                                 firstSets.remove('&');
                                 calculateFirst(nextSym);
@@ -386,6 +390,7 @@ bool Grammar::calculateFirst(char symbol) {
                     while (currentNode != nullptr && currentNode->symbol != '|') {
                         currentNode = currentNode->next;
                     }
+                    //move to the next node if there is a alternative
                     if (currentNode != nullptr) {
                         currentNode = currentNode->next;
                     }
