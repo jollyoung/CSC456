@@ -71,6 +71,8 @@ class Grammar {
         
         void printFirstSets(char symbol);
         void printFirstSets(string symbols);
+
+        void printFirstAll();
 };
 
 #endif

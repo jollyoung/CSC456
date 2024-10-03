@@ -128,3 +128,19 @@ bool LinkList::search(char sym) {
     }
     return rc;
 }
+
+//******************************************************************************
+char LinkList::getSymbol(int index) {
+    char rc = 0;
+    int i = 0;
+    node *currentNode = head;
+    while (currentNode != nullptr) {
+        if (i == index) {
+            rc = currentNode->symbol;
+            break;
+        }
+        i++;
+        currentNode = currentNode->next;
+    }
+    return rc;
+}

@@ -10,17 +10,30 @@
 
 #include "first.h"
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        cerr << "Usage: " << argv[0] << " <input file>" << endl;
+        return 1;
+    }
+
     Grammar grammar;
-    string filename = "grammar.txt";
+    string filename = argv[1];  
+
+    ifstream inputFile(filename);
+    if (!inputFile) {
+        cerr << "Error: could not open input file " << filename << endl;
+        return 1;
+    }
+
+    cin.rdbuf(inputFile.rdbuf());
+
     int rc = grammar.readGrammar(filename);
     if (rc == 0) {
         grammar.printAll();
-        grammar.printFirstSets('d');
-        grammar.printFirstSets('B');
-        grammar.printFirstSets('S');
-        grammar.printFirstSets("Ba");
+        grammar.printFirstAll();
     }
+
+    inputFile.close(); 
 
     return 0;
 }

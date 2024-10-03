@@ -1,5 +1,0 @@
-S -> Ba ;
-B -> b | & ;
-C -> def 
-    | fed ;
-C -> dog ;

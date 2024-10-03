@@ -241,7 +241,7 @@ int Grammar::readGrammar(string& filename) {
 //******************************************************************************
 // Function to print the grammar
 void Grammar::printGrammar() {
-    cout << "Grammar:" << endl;
+    cout << "Production:" << endl;
 
     // Set the current production to start from the first production
     Production *currentProduction = startProduction;
@@ -315,10 +315,13 @@ void Grammar::printStartSymbol() {
 
 //******************************************************************************
 void Grammar::printAll() {
-    printGrammar();
     printStartSymbol();
+    cout << endl;
     printTerminals();
+    cout << endl;
     printNonTerminals();
+    cout << endl;
+    printGrammar();
     cout << endl;
 }
 
@@ -448,4 +451,25 @@ void Grammar::printFirstSets(string symbols) {
 
     // Clear the first set
     firstSets.clear();
+}
+
+//******************************************************************************
+void Grammar::printFirstAll(){
+    char symbol;
+
+    cout << "First sets for all symbols:" << endl;
+
+    cout << "Non-terminals:" << endl;
+    for (int i = 0; i < nonTerminals.getSize(); i++) {
+        symbol = nonTerminals.getSymbol(i);
+        printFirstSets(symbol);
+    }
+
+    cout << endl;
+
+    cout << "Terminals:" << endl;
+    for (int i = 0; i < terminals.getSize(); i++) {
+        symbol = terminals.getSymbol(i);
+        printFirstSets(symbol);
+    }
 }
